@@ -35,14 +35,38 @@ os.chdir(SessionDataFolder)
 
 CaseFolder = 'CT'
 TypeFolder = 'sample'
-NiiFile = 'LIDC-IDRI-0001.nii.gz'
+#
+# # 定义原始文件名
+# # BaseNiiFile = 'LIDC-IDRI-0001.nii.gz'
+# BaseNiiFile = 'LIDC-IDRI-0001_R_1.nii.gz'
+#
+# # --- Load Intensity Volume
+# # 使用 BaseNiiFile 拼接路径
+# NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', BaseNiiFile)
+# niivol, niimetada = readNifty(NiiFile)
+#
+# # --- Load Nodule Mask
+# # 再次使用 BaseNiiFile 拼接路径，指向 nodule_mask 文件夹
+# NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'nodule_mask', BaseNiiFile)
+# niimask, niimetada = readNifty(NiiFile)
+# --- LOAD DATA
 
-# --- Load Intensity Volume
-NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', NiiFile)
+# --- 1. 定义 CT 图像的文件名 (这是你的 CT 图像文件的正确名称)
+ImageFile = 'LIDC-IDRI-0001.nii.gz'
+
+# --- 2. 定义你想使用的掩码文件名 (这是你实际可用的掩码文件名)
+MaskFile = 'LIDC-IDRI-0001_R_1.nii.gz'
+
+# ----------------- Load Intensity Volume (CT 图像) -----------------
+# 注意这里使用了 ImageFile
+NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', ImageFile)
 niivol, niimetada = readNifty(NiiFile)
-# --- Load Nodule Mask
-NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'nodule_mask', NiiFile)
+
+# ----------------- Load Nodule Mask (掩码文件) -----------------
+# 注意这里使用了 MaskFile
+NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'nodule_mask', MaskFile)
 niimask, niimetada = readNifty(NiiFile)
+
 
 # --- VOLUME METADATA
 print('Voxel Resolution (mm): ', niimetada.spacing)
