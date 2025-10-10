@@ -35,23 +35,6 @@ os.chdir(SessionDataFolder)
 
 CaseFolder = 'CT'
 TypeFolder = 'sample'
-#
-# # 定义原始文件名
-# # BaseNiiFile = 'LIDC-IDRI-0001.nii.gz'
-# BaseNiiFile = 'LIDC-IDRI-0001_R_1.nii.gz'
-#
-# # --- Load Intensity Volume
-# # 使用 BaseNiiFile 拼接路径
-# NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', BaseNiiFile)
-# niivol, niimetada = readNifty(NiiFile)
-#
-# # --- Load Nodule Mask
-# # 再次使用 BaseNiiFile 拼接路径，指向 nodule_mask 文件夹
-# NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'nodule_mask', BaseNiiFile)
-# niimask, niimetada = readNifty(NiiFile)
-# --- LOAD DATA
-
-# --- 1. 定义 CT 图像的文件名 (这是你的 CT 图像文件的正确名称)
 ImageFile = 'LIDC-IDRI-0001.nii.gz'
 
 # --- 2. 定义你想使用的掩码文件名 (这是你实际可用的掩码文件名)
