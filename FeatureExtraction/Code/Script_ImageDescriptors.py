@@ -31,7 +31,7 @@ from sklearn.cluster import KMeans
 
 ### IMPORT SESSION FUNCTIONS 
 #### Session Code Folder
-CodeMainDir=r''
+CodeMainDir=os.path.dirname(os.path.dirname(__file__))
 sys.path.append(CodeMainDir)
 # .nii Read Data
 from NiftyIO import readNifty
@@ -45,7 +45,7 @@ from scipy.ndimage import sobel, gaussian_filter, median_filter
 
 ######## PARAMETERS
 #### Data Folders
-SessionDataFolder='LUNA Dataset/'
+SessionDataFolder=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'dataset', 'full')
 ROIFolder='VOIs'
 MaskROINiiFile='nodule_mask/LIDC-IDRI-0016_R_2.nii.gz'
 ROINiiFile='image/LIDC-IDRI-0016_R_2.nii.gz'
