@@ -1,34 +1,65 @@
 """
-PyRadiomics Feature Extraction Example
+PyRadiomics Feature Extraction + Interactive Visualization
 Author: doffi
+Year: 2025
 Description:
-  This script demonstrates how to extract radiomics features
-  from a CT image and its corresponding mask using PyRadiomics.
+  Extracts radiomics features and interactively displays
+  each case (one at a time) with mask overlay.
 """
 
-from radiomics import featureextractor
-import SimpleITK as sitk
 import os
+import SimpleITK as sitk
+import numpy as np
+import matplotlib.pyplot as plt
+from radiomics import featureextractor
 
-# 1 edit your path
-image_path = r"E:\Projects\UAB-Decision-Making\dataset\sample\CT\image\LIDC-IDRI-0001.nii.gz"
-mask_path  = r"E:\Projects\UAB-Decision-Making\dataset\sample\CT\nodule_mask\LIDC-IDRI-0001_R_1.nii.gz"
+# --- Paths ---
+dataset_root = r"E:\Projects\UAB-Decision-Making\dataset\sample\CT"
+image_folder = os.path.join(dataset_root, "image")
+mask_folder  = os.path.join(dataset_root, "nodule_mask")
 
-# 2 Check whether both files exist
-print("Image exists:", os.path.exists(image_path))
-print("Mask exists:", os.path.exists(mask_path))
-
-# 3 Load the image and mask using SimpleITK
-image = sitk.ReadImage(image_path)
-mask = sitk.ReadImage(mask_path)
-
-# 4 Initialize the PyRadiomics feature extractor (using default settings)
+# --- PyRadiomics setup ---
 extractor = featureextractor.RadiomicsFeatureExtractor()
 
-# 5 Perform feature extraction
-result = extractor.execute(image, mask)
+# --- Loop through cases ---
+for image_file in sorted(os.listdir(image_folder)):
+    if not image_file.endswith(".nii.gz"):
+        continue
 
-# 6 Display results
-print(f"Successfully extracted {len(result)} features!")
-print("First 10 feature names:")
-print(list(result.keys())[:10])
+    base_name = os.path.splitext(os.path.splitext(image_file)[0])[0]
+    mask_candidates = [m for m in os.listdir(mask_folder) if m.startswith(base_name)]
+    if not mask_candidates:
+        print(f"No mask found for {base_name}, skipping.")
+        continue
+
+    mask_file = os.path.join(mask_folder, mask_candidates[0])
+    image_path = os.path.join(image_folder, image_file)
+
+    # --- Read image & mask ---
+    image = sitk.ReadImage(image_path)
+    mask = sitk.ReadImage(mask_file)
+    image_np = sitk.GetArrayFromImage(image)
+    mask_np = sitk.GetArrayFromImage(mask)
+
+    # --- Pick middle slice of mask ---
+    z_indices = np.where(mask_np.sum(axis=(1,2)) > 0)[0]
+    if len(z_indices) == 0:
+        print(f" Empty mask for {base_name}, skipping visualization.")
+        continue
+    mid_slice = z_indices[len(z_indices)//2]
+
+    # --- Visualization ---
+    plt.figure(figsize=(6,6))
+    plt.imshow(image_np[mid_slice], cmap='gray')
+    plt.contour(mask_np[mid_slice], colors='r', linewidths=1)
+    plt.title(f"{base_name} (slice {mid_slice})")
+    plt.axis('off')
+    plt.tight_layout()
+    plt.show()   # <== 👈 这句非常关键，会停下来等你看完窗口
+
+    # --- Extract features ---
+    print(f" Extracting features for {base_name} ...")
+    result = extractor.execute(image, mask)
+    print(f" {base_name}: extracted {len(result)} features.")
+
+print("All cases processed successfully!")
