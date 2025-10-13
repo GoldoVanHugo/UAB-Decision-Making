@@ -57,6 +57,7 @@ for image_file in sorted(os.listdir(image_folder)):
         continue
     mid_slice = z_indices[len(z_indices)//2]
 
+
     # STEP 4: Visualization 图像可视化
     plt.figure(figsize=(6,6))
     plt.imshow(image_np[mid_slice], cmap='gray')
