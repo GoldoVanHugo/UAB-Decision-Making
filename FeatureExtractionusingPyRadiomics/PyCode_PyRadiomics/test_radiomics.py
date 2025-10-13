@@ -55,7 +55,7 @@ for image_file in sorted(os.listdir(image_folder)):
     plt.title(f"{base_name} (slice {mid_slice})")
     plt.axis('off')
     plt.tight_layout()
-    plt.show()   # <== 👈 这句非常关键，会停下来等你看完窗口
+    plt.show()   # show after-processing images
 
     # --- Extract features ---
     print(f" Extracting features for {base_name} ...")
