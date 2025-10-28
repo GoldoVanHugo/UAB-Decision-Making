@@ -1,7 +1,8 @@
 # Dataset
 dataset
 data
-
+models
+*.joblib
 
 .idea/
 .DS_Store/
