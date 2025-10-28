@@ -35,7 +35,7 @@ os.chdir(SessionDataFolder)
 
 CaseFolder = 'CT'
 TypeFolder = 'sample'
-NiiFile = 'LIDC-IDRI-0001.nii.gz'
+NiiFile = 'LIDC-IDRI-0001_R_1.nii.gz'
 
 # --- Load Intensity Volume
 NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', NiiFile)

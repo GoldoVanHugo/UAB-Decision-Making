@@ -25,7 +25,7 @@ setVerbosity(60)
 db_path = '/home/willytell/Dropbox/code/ML4PM/CT'
 imageDirectory = 'image'
 maskDirectory =  'nodule_mask'
-imageName = os.path.join(db_path, imageDirectory, 'LIDC-IDRI-0001.nii.gz')
+imageName = os.path.join(db_path, imageDirectory, 'LIDC-IDRI-0001_R_1.nii.gz')
 maskName  = os.path.join(db_path, maskDirectory, 'LIDC-IDRI-0001_R_1.nii.gz')
 ####
     

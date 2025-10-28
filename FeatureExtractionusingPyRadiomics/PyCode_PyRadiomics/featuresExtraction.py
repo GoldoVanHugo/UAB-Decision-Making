@@ -120,7 +120,7 @@ def SliceMode(patient_id, nodule_id, diagnosis, image, mask, meta1, meta2, extra
 db_path = '/home/willytell/Dropbox/code/ML4PM/CT'
 imageDirectory = 'image'
 maskDirectory =  'nodule_mask'
-imageName = os.path.join(db_path, imageDirectory, 'LIDC-IDRI-0003.nii.gz')
+imageName = os.path.join(db_path, imageDirectory, 'LIDC-IDRI-0003_R_4.nii.gz')
 maskName  = os.path.join(db_path, maskDirectory, 'LIDC-IDRI-0003_R_2.nii.gz')
 ####
     
