@@ -1,19 +1,17 @@
 import os
 
-from trainer import (
-    TrainerRandomForest,
-    TrainerSVM,
-)
+from trainer.classification.trainer_classification import TrainerClassification
 
-DIR_PATH = os.path.dirname(__file__)
+REPO_PATH = os.path.dirname(__file__)
+
 
 config_benny = {
     "model_type": "svm",  # rf = RandomForest, svm = SVM
     "trainer": {
-        "data_path": os.path.join(DIR_PATH, "dataset", "sample", "CT"),
-        "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
+        "data_path": os.path.join(REPO_PATH, "dataset", "full", "VOIs"),
+        "model_path": os.path.join(REPO_PATH, "models", "classification"),
         "model_name": "svm_test_251015",
-        "meta_file": "MetadatabyAnnotation.xlsx",   # "MetadatabyNoduleMaxVoting.xlsx"
+        "meta_file": "MetadatabyNoduleMaxVoting.xlsx"
     },
     "load_model": False,
     # "load_model_path": "...",
@@ -26,10 +24,12 @@ config_benny = {
 
 if __name__ == "__main__":
     config = config_benny
-    if config["model_type"] == "rf":
+    """if config["model_type"] == "rf":
         trainer_class = TrainerRandomForest
     else:
-        trainer_class = TrainerSVM
+        trainer_class = TrainerSVM"""
+
+    trainer_class = TrainerClassification
 
     trainer = trainer_class(**config["trainer"])
 

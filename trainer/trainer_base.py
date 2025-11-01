@@ -1,13 +1,22 @@
 import abc
-from glob import glob
 import os
 import numpy as np
+import pandas as pd
+
+from glob import glob
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
+from constants import (
+    SEED,
+    VOXEL_TRAIN_RATIO,
+)
+
+
 class TrainerBase:
-    def __init__(self, data_path: str, model_path: str, model_name: str, image_folder: str = "image",
-                 mask_folder: str = "nodule_mask"):
+    def __init__(self, data_path: str, model_path: str, model_name: str, meta_file: str, image_folder: str = "image",
+                 mask_folder: str = "nodule_mask", set_seed: bool = True):
         """
         Trainer to train an SVM model
 
@@ -16,15 +25,33 @@ class TrainerBase:
         - data_path (str): The path to the dataset with the images and the masks.
         - model_path (str): The path to where the model will be stored.
         - model_name (str): The name of the model to store.
+        - meta_file (str): The file with the metadata.
         - image_folder (str): The name of the folder with the images (default: image).
         - mask_folder (str): The name of the folder with the masks (default: nodule_mask).
+        - set_seed (boolean): Use a seed for random operations (default: True).
         """
         self.data_path = data_path
         self.model_path = model_path
         self.model_name = model_name
         self.image_folder = image_folder
         self.mask_folder = mask_folder
+        self.meta_file = meta_file
+        self.set_seed = set_seed
+        self.meta_data = None
+        self._set_meta_data(file=self.meta_file)
+
         self.model = None
+
+        if not os.path.exists(self.model_path):
+            os.makedirs(self.model_path)
+
+    def _set_meta_data(self, file: str):
+        self.meta_data = pd.read_excel(os.path.join(self.data_path, "..", file))
+
+    def _get_patient_date(self, patient_id: str, nodule_id: int):
+        pat_rows = self.meta_data.loc[self.meta_data["patient_id"] == patient_id]
+
+        return pat_rows.loc[pat_rows["nodule_id"] == nodule_id]
 
     def _get_paths(self, file_extension: str = ".nii.gz") -> tuple[list, list]:
         """
@@ -71,6 +98,7 @@ class TrainerBase:
 
         The index to split the dataset
         """
+
         def get_id(file: str) -> str:
             return os.path.basename(file).split(".")[0].split("_")[0]
 
@@ -85,50 +113,49 @@ class TrainerBase:
 
         return split_idx
 
+    @abc.abstractmethod
     def _get_image(self, image_path: str) -> np.ndarray:
         raise ValueError("Implement in child class.")
 
+    @abc.abstractmethod
     def _get_mask(self, mask_path: str) -> np.ndarray:
         raise ValueError("Implement in child class.")
 
-    def _get_dataset(self, image_paths: list[str], mask_paths: list[str], voxel_ratio: float = None) -> tuple[np.ndarray, np.ndarray]:
-        X, Y = [], []
+    @abc.abstractmethod
+    def _get_dataset(self, image_paths: list[str], mask_paths: list[str], voxel_ratio: float = None) -> tuple[
+                     np.ndarray, np.ndarray]:
+        raise ValueError("Implement in child class.")
 
-        for image_path, mask_path in zip(image_paths, mask_paths):
-            x_ = self._get_image(image_path=image_path)
-            y_ = self._get_mask(mask_path=mask_path)
-
-            if voxel_ratio is not None:
-                sample_idx = np.random.choice(len(y_), size=int(voxel_ratio * len(y_)), replace=False)
-                x_ = x_[sample_idx]
-                y_ = y_[sample_idx]
-
-            X.append(x_)
-            Y.append(y_)
-
-        X = np.concatenate(X, axis=0)
-        Y = np.concatenate(Y, axis=0)
-
+    @staticmethod
+    def _scale_x(x: np.ndarray) -> np.ndarray:
         scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
+        return scaler.fit_transform(x)
 
-        return X_scaled, Y
+    def _shuffle(self, x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        if self.set_seed:
+            np.random.seed(seed=SEED)
 
-    def get_train_and_test_datasets(self, file_extension: str = ".nii.gz", split_ratio: float = 0.8):
+        indices = np.arange(len(x))
+        np.random.shuffle(indices)
+
+        return x[indices], y[indices]
+
+    def get_train_and_test_datasets(self, file_extension: str = ".nii.gz", split_ratio: float = 0.8) -> tuple[
+                                    tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray]]:
         image_paths, mask_paths = self._get_paths(file_extension=file_extension)
         split_idx = self._get_split(paths=image_paths, split_ratio=split_ratio)
 
         train_dataset = self._get_dataset(
             image_paths=image_paths[:split_idx],
             mask_paths=mask_paths[:split_idx],
-            voxel_ratio=0.02,
+            voxel_ratio=VOXEL_TRAIN_RATIO,
         )
         test_dataset = self._get_dataset(
             image_paths=image_paths[split_idx:],
             mask_paths=mask_paths[split_idx:],
         )
 
-        return train_dataset, test_dataset
+        return self._shuffle(x=train_dataset[0], y=train_dataset[1]), test_dataset
 
     @abc.abstractmethod
     def save_model(self):
@@ -143,7 +170,7 @@ class TrainerBase:
         raise ValueError("Implement in child class.")
 
     @abc.abstractmethod
-    def predict(self, x:np.ndarray) -> np.ndarray:
+    def predict(self, x: np.ndarray) -> np.ndarray:
         raise ValueError("Implement in child class.")
 
     def test(self, x_test: np.ndarray, y_test: np.ndarray):
@@ -161,4 +188,3 @@ class TrainerBase:
         print(f"F1-Score : {f1:.4f}")
 
         return acc, prec, rec, f1
-
