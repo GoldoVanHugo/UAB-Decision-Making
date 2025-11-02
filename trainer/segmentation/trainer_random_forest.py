@@ -7,27 +7,26 @@ from sklearn.ensemble import RandomForestClassifier
 
 from io_data import readNifty
 from .trainer_segmentation import TrainerSegmentation
+from constants import SIZE_3D
 
 
 class TrainerRandomForest(TrainerSegmentation):
     def _get_image(self, image_path: str) -> np.ndarray:
         image, _ = readNifty(filePath=image_path)
-        # Extract coordinates grid
-        z_idx, y_idx, x_idx = np.meshgrid(
-            np.arange(image.shape[2]),
-            np.arange(image.shape[1]),
-            np.arange(image.shape[0]),
-            indexing="ij"
-        )
 
-        # flatten features
-        intensity = image.ravel()
-        x_feat = x_idx.ravel()
-        y_feat = y_idx.ravel()
-        z_feat = z_idx.ravel()
+        patch_images = []
+        for z in range(image.shape[-1]):
+            pad_image = np.pad(
+                array=image[..., z],
+                pad_width=SIZE_3D // 2,
+                mode="reflect",
+            )
+            patch_image = np.lib.stride_tricks.sliding_window_view(pad_image, window_shape=(SIZE_3D, SIZE_3D))
+            patch_images.append(np.expand_dims(patch_image, axis=2))
 
-        # Feature-Matrix für dieses Volume
-        return np.stack([intensity, x_feat, y_feat, z_feat], axis=1)
+        patch_images = np.concatenate(patch_images, axis=2)
+
+        return patch_images.reshape((-1, SIZE_3D*SIZE_3D))
 
     def save_model(self):
         if self.model is None:

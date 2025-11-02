@@ -8,11 +8,9 @@ from ..trainer_base import TrainerBase
 
 
 class TrainerClassification(TrainerBase):
+    @abc.abstractmethod
     def _get_image(self, image_path: str) -> np.ndarray:
-        img, _ = readNifty(filePath=image_path)
-
-        # flatten data
-        return img.ravel()
+        return super()._get_image(image_path=image_path)
 
     def _get_mask(self, mask_path: str) -> np.ndarray:
         mask, _ = readNifty(filePath=mask_path)

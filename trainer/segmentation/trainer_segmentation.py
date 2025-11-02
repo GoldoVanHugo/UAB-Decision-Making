@@ -30,7 +30,7 @@ class TrainerSegmentation(TrainerBase):
                 if self.set_seed:
                     np.random.seed(seed=SEED)
 
-                unique_labels = np.unique(y, return_counts=True)
+                unique_labels = np.unique(y)
                 n_total = len(y)
                 n_sample_total = int(voxel_ratio * n_total)
 

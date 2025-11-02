@@ -10,10 +10,10 @@ DIR_PATH = os.path.dirname(__file__)
 config_benny = {
     "model_type": "svm",  # rf = RandomForest, svm = SVM
     "trainer": {
-        "data_path": os.path.join(DIR_PATH, "dataset", "sample", "CT"),
+        "data_path": os.path.join(DIR_PATH, "dataset", "full", "VOIs"),
         "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
         "model_name": "svm_test_251015",
-        "meta_file": "MetadatabyAnnotation.xlsx",   # "MetadatabyNoduleMaxVoting.xlsx"
+        "meta_file": "MetadatabyNoduleMaxVoting.xlsx"
     },
     "load_model": False,
     # "load_model_path": "...",

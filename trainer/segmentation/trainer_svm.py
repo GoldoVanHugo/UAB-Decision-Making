@@ -33,7 +33,7 @@ class TrainerSVM(TrainerSegmentation):
 
         self.model.fit(x, y)
 
-    def predict(self, x:np.ndarray):
+    def predict(self, x: np.ndarray):
         if self.model is None:
             raise ValueError("First train or load a model.")
 

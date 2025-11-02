@@ -129,6 +129,7 @@ class TrainerBase:
     @staticmethod
     def _scale_x(x: np.ndarray) -> np.ndarray:
         scaler = StandardScaler()
+
         return scaler.fit_transform(x)
 
     def _shuffle(self, x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
