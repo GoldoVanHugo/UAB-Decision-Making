@@ -1,20 +1,14 @@
-import os.path
+import os
 
 import numpy as np
 import joblib
 
 from sklearn import svm
 
-from io_data import readNifty
-from .trainer_segmentation import TrainerSegmentation
+from .trainer_base import TrainerBase
 
 
-class TrainerSVM(TrainerSegmentation):
-    def _get_image(self, image_path: str) -> np.ndarray:
-        image, _ = readNifty(filePath=image_path)
-
-        return image.reshape((-1, 1))
-
+class TrainerSVM(TrainerBase):
     def save_model(self):
         if self.model is None:
             raise ValueError("First train or load a model.")

@@ -1,33 +1,14 @@
-import os.path
+import os
 
 import numpy as np
 import joblib
 
 from sklearn.ensemble import RandomForestClassifier
 
-from io_data import readNifty
-from .trainer_segmentation import TrainerSegmentation
-from constants import SIZE_3D
+from .trainer_base import TrainerBase
 
 
-class TrainerRandomForest(TrainerSegmentation):
-    def _get_image(self, image_path: str) -> np.ndarray:
-        image, _ = readNifty(filePath=image_path)
-
-        patch_images = []
-        for z in range(image.shape[-1]):
-            pad_image = np.pad(
-                array=image[..., z],
-                pad_width=SIZE_3D // 2,
-                mode="reflect",
-            )
-            patch_image = np.lib.stride_tricks.sliding_window_view(pad_image, window_shape=(SIZE_3D, SIZE_3D))
-            patch_images.append(np.expand_dims(patch_image, axis=2))
-
-        patch_images = np.concatenate(patch_images, axis=2)
-
-        return patch_images.reshape((-1, SIZE_3D*SIZE_3D))
-
+class TrainerRandomForest(TrainerBase):
     def save_model(self):
         if self.model is None:
             raise ValueError("First train or load a model.")

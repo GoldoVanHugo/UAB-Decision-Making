@@ -1,5 +1,6 @@
 import os
 
+from dataloader import DataloaderSegmentation
 from trainer import (
     TrainerRandomForest,
     TrainerSVM,
@@ -9,11 +10,17 @@ DIR_PATH = os.path.dirname(__file__)
 
 config_benny = {
     "model_type": "svm",  # rf = RandomForest, svm = SVM
-    "trainer": {
+    "dataloader": {
         "data_path": os.path.join(DIR_PATH, "dataset", "full", "VOIs"),
+        "meta_file": "MetadatabyNoduleMaxVoting.xlsx",
+        "set_seed": True,
+        "use_all_voxels": False,
+        "d3": False,    # set to true for RandomForest
+    },
+    "trainer": {
         "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
         "model_name": "svm_test_251015",
-        "meta_file": "MetadatabyNoduleMaxVoting.xlsx"
+        "set_seed": True,
     },
     "load_model": False,
     # "load_model_path": "...",
@@ -26,6 +33,7 @@ config_benny = {
 
 if __name__ == "__main__":
     config = config_benny
+    dataloader = DataloaderSegmentation(**config["dataloader"])
     if config["model_type"] == "rf":
         trainer_class = TrainerRandomForest
     else:
@@ -38,7 +46,7 @@ if __name__ == "__main__":
             raise ValueError("Set the key 'load_model_path' to load a model.")
         trainer.load_model(model_path=config["load_model_path"])
 
-    train_dataset, test_dataset = trainer.get_train_and_test_datasets()
+    train_dataset, test_dataset = dataloader.get_train_and_test_datasets()
 
     if config["pipline_steps"]["train"]:
         print("----- Start Training -----")

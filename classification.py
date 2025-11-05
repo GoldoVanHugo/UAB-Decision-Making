@@ -1,17 +1,27 @@
 import os
 
-from trainer.classification.trainer_classification import TrainerClassification
+from dataloader import DataloaderClassification
+from trainer import (
+    TrainerRandomForest,
+    TrainerSVM
+)
 
-REPO_PATH = os.path.dirname(__file__)
+DIR_PATH = os.path.dirname(__file__)
 
 
 config_benny = {
-    "model_type": "svm",  # rf = RandomForest, svm = SVM
+    "model_type": "rf",  # rf = RandomForest, svm = SVM
+    "dataloader": {
+        "data_path": os.path.join(DIR_PATH, "dataset", "full", "VOIs"),
+        "meta_file": "MetadatabyNoduleMaxVoting.xlsx",
+        "set_seed": True,
+        "use_all_voxels": True,
+        "d3": True,    # set to true for RandomForest
+    },
     "trainer": {
-        "data_path": os.path.join(REPO_PATH, "dataset", "full", "VOIs"),
-        "model_path": os.path.join(REPO_PATH, "models", "classification"),
+        "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
         "model_name": "svm_test_251015",
-        "meta_file": "MetadatabyNoduleMaxVoting.xlsx"
+        "set_seed": True,
     },
     "load_model": False,
     # "load_model_path": "...",
@@ -24,12 +34,11 @@ config_benny = {
 
 if __name__ == "__main__":
     config = config_benny
-    """if config["model_type"] == "rf":
+    dataloader = DataloaderClassification(**config["dataloader"])
+    if config["model_type"] == "rf":
         trainer_class = TrainerRandomForest
     else:
-        trainer_class = TrainerSVM"""
-
-    trainer_class = TrainerClassification
+        trainer_class = TrainerSVM
 
     trainer = trainer_class(**config["trainer"])
 
@@ -38,7 +47,7 @@ if __name__ == "__main__":
             raise ValueError("Set the key 'load_model_path' to load a model.")
         trainer.load_model(model_path=config["load_model_path"])
 
-    train_dataset, test_dataset = trainer.get_train_and_test_datasets()
+    train_dataset, test_dataset = dataloader.get_train_and_test_datasets()
 
     if config["pipline_steps"]["train"]:
         print("----- Start Training -----")
