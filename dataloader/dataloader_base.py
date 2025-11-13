@@ -8,6 +8,7 @@ from utils import (
     shuffle,
     get_image_and_mask_paths,
     get_split_idx,
+    patching,
 )
 from constants import SIZE_3D
 
@@ -55,13 +56,10 @@ class DataloaderBase:
         if self.d3:
             patch_images = []
             for z in range(image.shape[-1]):
-                pad_image = np.pad(
-                    array=image[..., z],
-                    pad_width=SIZE_3D // 2,
-                    mode="reflect",
-                )
-                patch_image = np.lib.stride_tricks.sliding_window_view(pad_image, window_shape=(SIZE_3D, SIZE_3D))
-                patch_images.append(np.expand_dims(patch_image, axis=2))
+                patch_images.append(patching(
+                    image=image[..., z],
+                    size_3d=SIZE_3D,
+                ))
 
             patch_images = np.concatenate(patch_images, axis=2)
 

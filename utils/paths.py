@@ -57,16 +57,28 @@ def get_split_idx(paths: list, split_ratio: float = .8) -> int:
     The index to split the dataset
     """
 
-    def get_id(file: str) -> str:
-        return os.path.basename(file).split(".")[0].split("_")[0]
-
-    ids = list(set(get_id(file=file) for file in paths))
+    ids = list(set(get_pat_id(file=file) for file in paths))
     split_ids = int(split_ratio * len(ids))
 
     ids_train = ids[:split_ids]
     split_idx = 0
     for p in paths:
-        if get_id(file=p) in ids_train:
+        if get_pat_id(file=p) in ids_train:
             split_idx += 1
 
     return split_idx
+
+
+def get_pat_id(file: str) -> str:
+    pat_id, _ = get_pat_and_node_id(file=file)
+
+    return pat_id
+
+
+def get_pat_and_node_id(file: str) -> tuple[str, str]:
+    file_name = os.path.basename(file).split(".")[0]
+    split_name = file_name.split("_")
+    pat_id = split_name[0]
+    node_id = f"{split_name[1]}_{split_name[2]}"
+
+    return pat_id, node_id

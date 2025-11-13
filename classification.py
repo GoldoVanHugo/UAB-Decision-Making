@@ -19,8 +19,8 @@ config_benny = {
         "d3": True,    # set to true for RandomForest
     },
     "trainer": {
-        "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
-        "model_name": "svm_test_251015",
+        "model_path": os.path.join(DIR_PATH, "models", "classification"),
+        "model_name": "rf_test_251015",
         "set_seed": True,
     },
     "load_model": False,

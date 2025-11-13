@@ -9,17 +9,17 @@ from trainer import (
 DIR_PATH = os.path.dirname(__file__)
 
 config_benny = {
-    "model_type": "svm",  # rf = RandomForest, svm = SVM
+    "model_type": "rf",  # rf = RandomForest, svm = SVM
     "dataloader": {
         "data_path": os.path.join(DIR_PATH, "dataset", "full", "VOIs"),
         "meta_file": "MetadatabyNoduleMaxVoting.xlsx",
         "set_seed": True,
         "use_all_voxels": False,
-        "d3": False,    # set to true for RandomForest
+        "d3": True,    # set to true for RandomForest
     },
     "trainer": {
         "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
-        "model_name": "svm_test_251015",
+        "model_name": "rf_test_251111",
         "set_seed": True,
     },
     "load_model": False,
