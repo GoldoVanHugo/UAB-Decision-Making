@@ -35,14 +35,25 @@ os.chdir(SessionDataFolder)
 
 CaseFolder = 'CT'
 TypeFolder = 'sample'
+<<<<<<< HEAD
 NiiFile = 'LIDC-IDRI-0001_R_1.nii.gz'
+=======
+ImageFile = 'LIDC-IDRI-0001.nii.gz'
+>>>>>>> b2c07893f204f57c2b5f0e0bb1641e057fd2f584
 
-# --- Load Intensity Volume
-NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', NiiFile)
+# --- 2. 定义你想使用的掩码文件名 (这是你实际可用的掩码文件名)
+MaskFile = 'LIDC-IDRI-0001_R_1.nii.gz'
+
+# ----------------- Load Intensity Volume (CT 图像) -----------------
+# 注意这里使用了 ImageFile
+NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'image', ImageFile)
 niivol, niimetada = readNifty(NiiFile)
-# --- Load Nodule Mask
-NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'nodule_mask', NiiFile)
+
+# ----------------- Load Nodule Mask (掩码文件) -----------------
+# 注意这里使用了 MaskFile
+NiiFile = os.path.join(SessionDataFolder, TypeFolder, CaseFolder, 'nodule_mask', MaskFile)
 niimask, niimetada = readNifty(NiiFile)
+
 
 # --- VOLUME METADATA
 print('Voxel Resolution (mm): ', niimetada.spacing)
