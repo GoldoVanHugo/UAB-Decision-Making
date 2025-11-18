@@ -3,7 +3,7 @@ import os
 import numpy as np
 import joblib
 
-from sklearn import svm
+from sklearn.svm import LinearSVC
 
 from .trainer_base import TrainerBase
 
@@ -20,9 +20,8 @@ class TrainerSVM(TrainerBase):
 
     def train(self, x: np.ndarray, y: np.ndarray):
         if self.model is None:
-            self.model = svm.SVC(
-                kernel="linear",
-                verbose=True,
+            self.model = LinearSVC(
+                verbose=1,
             )
 
         self.model.fit(x, y)

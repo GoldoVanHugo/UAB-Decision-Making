@@ -16,14 +16,14 @@ from matplotlib.patches import Patch
 
 
 if __name__ == "__main__":
-    img_path = os.path.join("dataset", "full", "VOIs", "image", "LIDC-IDRI-0003_R_3.nii.gz")
-    mask_path = os.path.join("dataset", "full", "VOIs", "nodule_mask", "LIDC-IDRI-0003_R_3.nii.gz")
-    d3 = True
+    img_path = os.path.join("dataset", "processed", "VOIs", "image", "LIDC-IDRI-1011_R_3.nii.gz")
+    mask_path = os.path.join("dataset", "processed", "VOIs", "nodule_mask", "LIDC-IDRI-1011_R_3.nii.gz")
+    d3 = False
 
     img, _ = readNifty(img_path)
     mask, _ = readNifty(mask_path)
 
-    model_path = os.path.join("models", "segmentation", "rf_test_251111.joblib")
+    model_path = os.path.join("models", "segmentation", "svm_test_251117.joblib")
     model = load(model_path)
 
     visu_folder = "visualization"
@@ -40,8 +40,7 @@ if __name__ == "__main__":
         else:
             img_ = org_img.reshape((-1, 1))
 
-        scaled_img = standard_scaling(x=img_)
-        y_pred = model.predict(scaled_img)
+        y_pred = model.predict(img_)
         y_pred_mask = y_pred.reshape(org_img.shape)
 
         # 0 = TN (gray), 1 = FP (red), 2 = FN (blue), 3 = TP (green)

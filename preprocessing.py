@@ -47,14 +47,14 @@ DEFAULT_APPLY_MORPHOLOGY = True
 # ------------------------ Path Resolution ------------------------
 
 CURRENT_DIR = os.path.dirname(__file__)                                # ...\FeatureExtractionusingPyRadiomics\PyCode_PyRadiomics
-PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, "..", ".."))  # ...\UAB-Decision-Making
+PROJECT_ROOT = CURRENT_DIR  # ...\UAB-Decision-Making
 
 # Allow passing dataset root from the command line (must contain image/ and nodule_mask/)
 if len(sys.argv) > 1:
     DATASET_ROOT = os.path.abspath(sys.argv[1])
 else:
     # Default: dataset/sample/CT  (remember to change this for the exam)
-    DATASET_ROOT = os.path.join(PROJECT_ROOT, "dataset", "sample", "CT")
+    DATASET_ROOT = os.path.join(PROJECT_ROOT, "dataset", "full", "VOIs")
 
 # Output folder (derived from input folder name, e.g., CT or VOIs)
 INFERRED_NAME = os.path.basename(DATASET_ROOT.rstrip("\\/"))
@@ -129,7 +129,7 @@ def smooth_image(
 
     if method == "gaussian":
         # SimpleITK expects variance = sigma^2
-        return sitk.DiscreteGaussian(img, variance=gaussian_sigma**2)
+        return sitk.DiscreteGaussian(img, variance=[gaussian_sigma**2])
     elif method == "median":
         return sitk.Median(img, [median_radius] * 3)
     else:

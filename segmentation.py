@@ -1,5 +1,7 @@
 import os
 
+from torchvision.datasets.inaturalist import DATASET_URLS
+
 from dataloader import DataloaderSegmentation
 from trainer import (
     TrainerRandomForest,
@@ -7,19 +9,20 @@ from trainer import (
 )
 
 DIR_PATH = os.path.dirname(__file__)
+DATASET_PATH = os.path.join(DIR_PATH, "dataset")
 
 config_benny = {
-    "model_type": "rf",  # rf = RandomForest, svm = SVM
+    "model_type": "svm",  # rf = RandomForest, svm = SVM
     "dataloader": {
-        "data_path": os.path.join(DIR_PATH, "dataset", "full", "VOIs"),
-        "meta_file": "MetadatabyNoduleMaxVoting.xlsx",
+        "data_path": os.path.join(DATASET_PATH, "processed", "VOIs"),
+        "meta_file_path": os.path.join(DATASET_PATH, "full", "MetadatabyNoduleMaxVoting.xlsx"),
         "set_seed": True,
         "use_all_voxels": False,
-        "d3": True,    # set to true for RandomForest
+        "d3": False,    # set to true for RandomForest
     },
     "trainer": {
         "model_path": os.path.join(DIR_PATH, "models", "segmentation"),
-        "model_name": "rf_test_251111",
+        "model_name": "svm_test_251117",
         "set_seed": True,
     },
     "load_model": False,

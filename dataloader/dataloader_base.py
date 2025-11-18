@@ -1,4 +1,3 @@
-import os
 import abc
 import pandas as pd
 import numpy as np
@@ -14,7 +13,7 @@ from constants import SIZE_3D
 
 
 class DataloaderBase:
-    def __init__(self, data_path: str, meta_file: str, image_folder: str = "image", mask_folder: str = "nodule_mask",
+    def __init__(self, data_path: str, meta_file_path: str, image_folder: str = "image", mask_folder: str = "nodule_mask",
                  file_extension: str = ".nii.gz", set_seed: bool = True, use_all_voxels: bool = True, d3: bool = False):
         """
         Trainer to train an SVM model
@@ -34,7 +33,7 @@ class DataloaderBase:
         self.data_path = data_path
         self.image_folder = image_folder
         self.mask_folder = mask_folder
-        self.meta_file = meta_file
+        self.meta_file = meta_file_path
         self.file_extension = file_extension
         self.set_seed = set_seed
         self.use_all_voxels = use_all_voxels
@@ -43,7 +42,7 @@ class DataloaderBase:
         self._set_meta_data(file=self.meta_file)
 
     def _set_meta_data(self, file: str):
-        self.meta_data = pd.read_excel(os.path.join(self.data_path, "..", file))
+        self.meta_data = pd.read_excel(file)
 
     def _get_patient_date(self, patient_id: str, nodule_id: int):
         pat_rows = self.meta_data.loc[self.meta_data["patient_id"] == patient_id]

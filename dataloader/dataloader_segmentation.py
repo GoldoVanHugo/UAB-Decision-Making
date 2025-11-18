@@ -46,4 +46,4 @@ class DataloaderSegmentation(DataloaderBase):
         X = np.concatenate(X, axis=0)
         Y = np.concatenate(Y, axis=0)
 
-        return standard_scaling(x=X), Y
+        return X, Y
