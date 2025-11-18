@@ -111,8 +111,7 @@ def normalize_intensity(
 def smooth_image(
     img: sitk.Image,
     method: str = DEFAULT_SMOOTH_METHOD,
-    gaussian_sigma: float = DEFAULT_GAUSSIAN_SIGMA,
-    median_radius: int = DEFAULT_MEDIAN_RADIUS
+    value: int | float = DEFAULT_GAUSSIAN_SIGMA,
 ) -> sitk.Image:
     """
     Apply smoothing to the CT image.
@@ -129,9 +128,9 @@ def smooth_image(
 
     if method == "gaussian":
         # SimpleITK expects variance = sigma^2
-        return sitk.DiscreteGaussian(img, variance=[gaussian_sigma**2])
+        return sitk.DiscreteGaussian(img, variance=[value**2])
     elif method == "median":
-        return sitk.Median(img, [median_radius] * 3)
+        return sitk.Median(img, [value] * 3)
     else:
         # Fallback: no smoothing if method is not recognized
         return img
@@ -164,8 +163,10 @@ def preprocess_ct_and_mask(
     hu_range=DEFAULT_HU_RANGE,
     apply_smoothing: bool = DEFAULT_APPLY_SMOOTHING,
     smooth_method: str = DEFAULT_SMOOTH_METHOD,
+    smooth_value: int | float = DEFAULT_GAUSSIAN_SIGMA,
     morphology_radius: int = DEFAULT_MORPH_RADIUS,
     apply_morphology: bool = DEFAULT_APPLY_MORPHOLOGY,
+    verbose: bool = False
 ):
     """
     Preprocess one image/mask pair and save results.
@@ -193,8 +194,7 @@ def preprocess_ct_and_mask(
         image_n = smooth_image(
             image_n,
             method=smooth_method,
-            gaussian_sigma=DEFAULT_GAUSSIAN_SIGMA,
-            median_radius=DEFAULT_MEDIAN_RADIUS,
+            value=smooth_value,
         )
 
     # Step 4: Optional morphological cleaning (for segmentation mask only)
@@ -212,7 +212,8 @@ def preprocess_ct_and_mask(
     sitk.WriteImage(image_n, output_image_path)
     sitk.WriteImage(mask_c, output_mask_path)
 
-    print(f"Preprocessed: {os.path.basename(image_path)}")
+    if verbose:
+        print(f"Preprocessed: {os.path.basename(image_path)}")
 
 
 def preprocess_dataset(
@@ -222,6 +223,7 @@ def preprocess_dataset(
     hu_range=DEFAULT_HU_RANGE,
     apply_smoothing: bool = DEFAULT_APPLY_SMOOTHING,
     smooth_method: str = DEFAULT_SMOOTH_METHOD,
+    smooth_value: int | float = DEFAULT_GAUSSIAN_SIGMA,
     morphology_radius: int = DEFAULT_MORPH_RADIUS,
     apply_morphology: bool = DEFAULT_APPLY_MORPHOLOGY,
 ):
@@ -273,6 +275,7 @@ def preprocess_dataset(
             hu_range=hu_range,
             apply_smoothing=apply_smoothing,
             smooth_method=smooth_method,
+            smooth_value=smooth_value,
             morphology_radius=morphology_radius,
             apply_morphology=apply_morphology,
         )
@@ -294,6 +297,7 @@ if __name__ == "__main__":
         hu_range=DEFAULT_HU_RANGE,
         apply_smoothing=DEFAULT_APPLY_SMOOTHING,
         smooth_method=DEFAULT_SMOOTH_METHOD,
+        smooth_value=DEFAULT_GAUSSIAN_SIGMA,
         morphology_radius=DEFAULT_MORPH_RADIUS,
         apply_morphology=DEFAULT_APPLY_MORPHOLOGY,
     )
