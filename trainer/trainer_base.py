@@ -35,12 +35,20 @@ class TrainerBase:
 
         self.model = None
 
+
+    @abc.abstractmethod
+    def model_extension(self):
+        raise ValueError("Implement in child class.")
+
+    @abc.abstractmethod
+    def save_model_(self):
+        raise ValueError("Implement in child class.")
+
+    def save_model(self):
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
 
-    @abc.abstractmethod
-    def save_model(self):
-        raise ValueError("Implement in child class.")
+        self.save_model_()
 
     @abc.abstractmethod
     def load_model(self, model_path: str):
@@ -55,14 +63,14 @@ class TrainerBase:
         raise ValueError("Implement in child class.")
 
     def test(self, x_test: np.ndarray, y_test: np.ndarray):
-        y_pred = self.predict(x=x_test)
+        scores, y_pred = self.predict(x=x_test)
 
         acc = accuracy_score(y_test, y_pred)
         prec = precision_score(y_test, y_pred, zero_division=0)
         rec = recall_score(y_test, y_pred, zero_division=0)
         f1 = f1_score(y_test, y_pred, zero_division=0)
 
-        fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+        fpr, tpr, thresholds = roc_curve(y_test, scores)
         roc_auc = auc(fpr, tpr)
 
         plt.figure(figsize=(6, 6))
@@ -84,4 +92,4 @@ class TrainerBase:
         print(f"Recall   : {rec:.4f}")
         print(f"F1-Score : {f1:.4f}")
 
-        return acc, prec, rec, f1
+        return acc, prec, rec, f1, roc_auc

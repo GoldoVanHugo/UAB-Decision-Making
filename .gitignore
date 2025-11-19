@@ -3,7 +3,7 @@ dataset
 data
 models
 visualization
-experiment_seg/*
+experiments/*
 *.joblib
 
 .idea/

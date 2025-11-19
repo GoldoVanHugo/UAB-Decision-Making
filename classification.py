@@ -47,7 +47,11 @@ if __name__ == "__main__":
             raise ValueError("Set the key 'load_model_path' to load a model.")
         trainer.load_model(model_path=config["load_model_path"])
 
-    train_dataset, test_dataset = dataloader.get_train_and_test_datasets()
+    train_paths, test_paths = dataloader.get_train_and_test_paths()
+    train_dataset, test_dataset = dataloader.get_train_and_test_datasets(
+        train_paths=train_paths,
+        test_paths=test_paths
+    )
 
     if config["pipline_steps"]["train"]:
         print("----- Start Training -----")

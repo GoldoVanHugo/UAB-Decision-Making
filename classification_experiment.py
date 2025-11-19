@@ -22,14 +22,14 @@ BASE_PREPROCESS_CONFIG = {
     "apply_smoothing": True,
     "smooth_method": "gaussian", # "gaussian", "median", or None
     "smooth_value": 1.0,
-    "apply_morphology": True,
-    "morphology_radius": 2
+    "apply_morphology": False,
+    "morphology_radius": 0
 }
 
 BASE_DATALOADER_CONFIG = {
     "meta_file_path": META_FILE_PATH,
     "set_seed": True,
-    "use_all_voxels": False,
+    "use_all_voxels": True,
     "d3": False,
     "size_3d": 0,
 }
@@ -44,23 +44,17 @@ def get_experiment_preprocess_configs():
 
     smoothing_gaussian_values = [2.0, 5.0]
     smoothing_median_values = [2, 5]
-    morphology_radius = [2, 3, 5]
 
     smoothing_options = list(itertools.product([True], ["gaussian"], smoothing_gaussian_values))
     smoothing_options += list(itertools.product([True], ["median"], smoothing_median_values))
     # add no smoothing to options
     smoothing_options.insert(0, (False, None, None))
-    morphology_options = list(itertools.product([True], morphology_radius))
-    # add no morphology to options
-    morphology_options.insert(0, (False, None))
 
-    for (s_apply, s_method, s_val), (m_apply, m_rad) in itertools.product(smoothing_options, morphology_options):
+    for (s_apply, s_method, s_val) in smoothing_options:
         config = BASE_PREPROCESS_CONFIG.copy()
         config["apply_smoothing"] = s_apply
         config["smooth_method"] = s_method
         config["smooth_value"] = s_val
-        config["apply_morphology"] = m_apply
-        config["morphology_radius"] = m_rad
 
         configs.append(config)
 
@@ -96,7 +90,7 @@ def get_experiment_training_configs():
 
 
 def experiment():
-    experiment_name = "segmentation"
+    experiment_name = "classification"
     experiment_root = os.path.join(PROJECT_DIR, "experiments", experiment_name)
 
     if not os.path.exists(experiment_root):
@@ -166,8 +160,6 @@ def experiment():
                 "apply_smoothing": prepro_config["apply_smoothing"],
                 "smooth_method": prepro_config["smooth_method"],
                 "smooth_value": prepro_config["smooth_value"],
-                "apply_morphology": prepro_config["apply_morphology"],
-                "morphology_radius": prepro_config["morphology_radius"],
                 "model_type": train_config["model_type"],
                 "3D": train_config["dataloader"]["d3"],
                 "3D size": train_config["dataloader"]["size_3d"],

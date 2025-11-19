@@ -128,7 +128,7 @@ def smooth_image(
 
     if method == "gaussian":
         # SimpleITK expects variance = sigma^2
-        return sitk.DiscreteGaussian(img, variance=[value**2])
+        return sitk.DiscreteGaussian(img, variance=value**2)
     elif method == "median":
         return sitk.Median(img, [value] * 3)
     else:
